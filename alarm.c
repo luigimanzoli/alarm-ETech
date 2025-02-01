@@ -17,6 +17,8 @@
 #define BTNA_PIN 5
 #define BTNB_PIN 6
 
+bool all_leds = 0;
+
 int contador = 0;
 static volatile uint32_t last_time = 0; 
 
@@ -64,6 +66,28 @@ void gpio_irq_handler(uint gpio, uint32_t events){
             }
 }
 
+// Função de callback para desligar o LED após o tempo programado.
+int64_t turn_off_callback(alarm_id_t id, void *user_data) {
+
+    printf("Alarme ativado. \n");
+
+    if (gpio_get(RLED_PIN) && gpio_get(GLED_PIN) && gpio_get(BLED_PIN)){
+
+        get_led(0,1,1);
+        add_alarm_in_ms(3000, turn_off_callback, NULL, true);
+
+    } else if (gpio_get(GLED_PIN) && gpio_get(BLED_PIN)){
+
+        get_led(0,0,1);
+        add_alarm_in_ms(3000, turn_off_callback, NULL, true);
+
+    } else if (gpio_get(BLED_PIN)){
+
+        get_led(0,0,0);
+
+    }
+}
+
 // Função principal
 int main() {
     // Inicializa clock, stdio e configurações
@@ -75,19 +99,17 @@ int main() {
 
     // Configuração dos botões como interrupções
     gpio_set_irq_enabled_with_callback(BTNA_PIN, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
-    
-    // Rotina inicial do programa para teste
-    gpio_put(RLED_PIN, 1);
-    sleep_ms(300);
-    gpio_put(RLED_PIN, 0);
 
     while (true) {
-       for (int i = 0; i < 5; i++){
-            gpio_put(RLED_PIN, 1);
-            sleep_ms(100);
-            gpio_put(RLED_PIN, 0);
-            sleep_ms(100);
-       }
+        if (!gpio_get(BTNA_PIN) && gpio_get(RLED_PIN) == 0 && gpio_get(GLED_PIN) == 0 && gpio_get(BLED_PIN) == 0){
+
+            sleep_ms(50);
+
+            get_led(1,1,1);
+
+            add_alarm_in_ms(3000, turn_off_callback, NULL, true);
+        }
+        sleep_ms(50);
     }
 
     return 0;
