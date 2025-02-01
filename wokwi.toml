@@ -1,4 +1,4 @@
 [wokwi]
 version = 1
-firmware = 'build/timer.uf2'
-elf = 'build/timer.elf'
+firmware = 'build/alarm.uf2'
+elf = 'build/alarm.elf'

@@ -8,12 +8,6 @@
 #include "pico/bootrom.h"
 #include "hardware/pwm.h"
 
-//número de LEDs
-#define NUM_PIXELS 25
-
-//pino de saída
-#define OUT_PIN 7
-
 // Definição dos LEDs RGB
 #define RLED_PIN 13
 #define GLED_PIN 11
@@ -43,9 +37,6 @@ void init_all() {
     gpio_set_dir(BTNA_PIN, GPIO_IN);
     gpio_pull_up(BTNA_PIN);
 
-    gpio_init(BTNB_PIN);
-    gpio_set_dir(BTNB_PIN, GPIO_IN);
-    gpio_pull_up(BTNB_PIN);
 }
 
 void get_led(bool R, bool G, bool B) {
@@ -84,8 +75,7 @@ int main() {
 
     // Configuração dos botões como interrupções
     gpio_set_irq_enabled_with_callback(BTNA_PIN, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
-    gpio_set_irq_enabled_with_callback(BTNB_PIN, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
-
+    
     // Rotina inicial do programa para teste
     gpio_put(RLED_PIN, 1);
     sleep_ms(300);
